@@ -8,3 +8,7 @@ span {
   padding: 4px;
   border: 1px solid black;
 }
+
+.again, .add, .stand {
+  display: none;
+}
