@@ -16,6 +16,8 @@ let pCard1, pCard2
 let dCard1, dCard2
 let pTotal, dTotal
 
+let chips = 1000
+
 /* Flags */
 let hasBlackjack = false
 let isDefeated = false
@@ -224,6 +226,5 @@ $stand.addEventListener("click", () => {
 
   checkWin()
 })
-
 
 
