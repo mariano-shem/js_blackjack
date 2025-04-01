@@ -18,7 +18,7 @@ let pTotal, dTotal
 
 let chips = 1000
 
-/* Flags */
+/** Flags */
 let hasBlackjack = false
 let isDefeated = false
 let isDraw = false
@@ -68,6 +68,7 @@ function checkSum(sum) {
   $pTotal.textContent = sum
 }
 
+/** Fn to check if dealer gets Blackjack at first two cards */
 function dealerBlackJack() {
   if (dTotal === 21) {
     isDefeated = true
@@ -78,6 +79,7 @@ function dealerBlackJack() {
   }
 }
 
+/** Fn to check if player and dealer hit Blackjack at first two cards */
 function bothBlackJack() {
   if (dTotal === 21 && pTotal === 21) {
     isDraw = true
@@ -88,6 +90,7 @@ function bothBlackJack() {
   }
 }
 
+/** Fn to check win status after standing */
 function checkWin() {
   if (dTotal < 22) {
     if (dTotal === pTotal) {
@@ -112,7 +115,7 @@ function checkWin() {
   console.log(`isDefeated: ${isDefeated}`)
 }
 
-/* Start Game */
+/** Start Game */
 $start.addEventListener("click", startGame = () => {
 
   $restart.style.display = "inline"
@@ -164,7 +167,7 @@ $start.addEventListener("click", startGame = () => {
   console.log(`Dealer: ${dTotal}`)
 })
 
-/* Add Card on Hand */
+/** Add Card on Hand */
 $add.addEventListener("click", () => {
 
   let newCard = Math.floor(Math.random()*10) + 2
@@ -179,7 +182,7 @@ $add.addEventListener("click", () => {
   checkSum(pTotal)
 })
 
-/* Remove All Card */
+/** New Round */
 $restart.addEventListener("click", () => {
 
   hasBlackjack = false
@@ -202,7 +205,7 @@ $restart.addEventListener("click", () => {
   startGame()
 })
 
-/* Stand Cards in Hand */
+/** Stand Cards in Hand */
 $stand.addEventListener("click", () => {
   $dCards.querySelectorAll("span")[1].textContent = dCards[1]
   $add.style.display = "none"
