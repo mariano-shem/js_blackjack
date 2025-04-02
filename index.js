@@ -1,14 +1,14 @@
-$start = document.querySelector(".start")
-$restart = document.querySelector(".again")
-$add = document.querySelector(".add")
-$stand = document.querySelector(".stand")
+const $start = document.querySelector(".start")
+const $restart = document.querySelector(".again")
+const $add = document.querySelector(".add")
+const $stand = document.querySelector(".stand")
 
-$pCards = document.querySelector(".player")
-$dCards = document.querySelector(".dealer")
+const $pCards = document.querySelector(".player")
+const $dCards = document.querySelector(".dealer")
 
-let $gMsg = document.querySelector(".game-msg")
-let $pTotal = document.querySelector(".t-player")
-let $dTotal = document.querySelector(".t-dealer")
+const $gMsg = document.querySelector(".game-msg")
+const $pTotal = document.querySelector(".t-player")
+const $dTotal = document.querySelector(".t-dealer")
 
 let pCards = []
 let dCards = []
@@ -19,9 +19,11 @@ let pTotal, dTotal
 let chips = 1000
 
 /** Flags */
-let hasBlackjack = false
-let isDefeated = false
+let hasWon = false
 let isDraw = false
+let isAlive = true
+let dBJ = false
+let pBJ = false
 
 function randomizeCards(card1, card2) {
   card1 = Math.floor(Math.random()*10) + 2
@@ -33,7 +35,7 @@ function sumOfCards(cardArr) {
   return sum = cardArr.reduce((acc, card) => acc + card)
 }
 
-function preventExceed(sum, card1, arr) {
+function preventBust(sum, card1, arr) {
   if (sum === 22) {
     card1 = 1
     arr[0] = card1
@@ -43,81 +45,101 @@ function preventExceed(sum, card1, arr) {
   return sum
 }
 
-function checkSum(sum) {
-
-  if (sum <= 20) {
-    $gMsg.textContent = `Hit or Stand? Current: ${sum}`
-  } else if (sum === 21) {
-    hasBlackjack = true
-    $gMsg.textContent = `Blackjack!`
-    $stand.style.display = "none"
-    $add.style.display = "none"
-
-    $dCards.querySelectorAll("span")[1].textContent = dCards[1]
-    $dTotal.textContent = dTotal
+function showDealerPair() {
+  $stand.style.display = "none"
+  $add.style.display = "none"
+  $dCards.querySelectorAll("span")[1].textContent = dCards[1]
+  $dTotal.textContent = dTotal
+}
+function onFirstPair() {
+  if (dTotal !== 21 && pTotal !== 21) {
+    isDraw = false
+    hasWon = false
+    isAlive = true
+    // $gMsg.textContent = `Hit or Stand? Current: ${pTotal}`
   } else {
-    isDefeated = true
-    $stand.style.display = "none"
-    $add.style.display = "none"
-    $gMsg.textContent = `You lost. Total: ${sum}`
-
-    $dCards.querySelectorAll("span")[1].textContent = dCards[1]
-    $dTotal.textContent = dTotal
-  }
-
-  $pTotal.textContent = sum
-}
-
-/** Fn to check if dealer gets Blackjack at first two cards */
-function dealerBlackJack() {
-  if (dTotal === 21) {
-    isDefeated = true
-    $stand.style.display = "none"
-    $add.style.display = "none"
-    $dTotal.textContent = dTotal
-    $dCards.querySelectorAll("span")[1].textContent = dCards[1]
+    if (dTotal === 21 && pTotal === 21) {
+      isDraw = true
+    } else if (dTotal === 21) {
+      isAlive = false
+      dBJ = true
+      // $gMsg.textContent = `Dealer Blackjack!`
+    } else if (pTotal === 21) {
+      hasWon = true
+      pBJ = true
+      // $gMsg.textContent = `Blackjack!`
+    }
+    showDealerPair()
+    showResults()
   }
 }
 
-/** Fn to check if player and dealer hit Blackjack at first two cards */
-function bothBlackJack() {
-  if (dTotal === 21 && pTotal === 21) {
-    isDraw = true
-    $stand.style.display = "none"
-    $add.style.display = "none"
-    $dTotal.textContent = dTotal
-    $dCards.querySelectorAll("span")[1].textContent = dCards[1]
+function onPlayerHit() {
+  if (pTotal === 21) {
+    onDealerHit()
+    if (dTotal === 21) {
+      isDraw = true
+      // $gMsg.textContent = `Draw.`
+    } else {
+      hasWon = true
+      // $gMsg.textContent = `You won 100 chips!`
+    }
+    showResults()
+  } else if (pTotal > 21) {
+    isAlive = false
+    // $gMsg.textContent = `Bust!`
+    showDealerPair()
+    showResults()
+  } else {
+    // $gMsg.textContent = `Hit or Stand? Current: ${pTotal}`
+    isDraw = false
+    isAlive = true
+    hasWon = false
   }
+}
+
+function onDealerHit() {
+  $dCards.querySelectorAll("span")[1].textContent = dCards[1]
+  $add.style.display = "none"
+  $stand.style.display = "none"
+  
+  while (dTotal < 17) {
+    let $thisCard = document.createElement("span")
+    let newCard = Math.floor(Math.random()*10) + 2
+    
+    dCards.push(newCard)
+    dTotal = sumOfCards(dCards)
+    
+    $thisCard.textContent = newCard
+    $dCards.append($thisCard)
+
+  } 
+  
+  $dTotal.textContent = dTotal
+
 }
 
 /** Fn to check win status after standing */
-function checkWin() {
-  if (dTotal < 22) {
-    if (dTotal === pTotal) {
-      isDefeated = false
-      isDraw = true
-      $gMsg.textContent = "Draw!"
-    } else if (dTotal > pTotal) {
-      isDefeated = true
-      isDraw = false
-      $gMsg.textContent = "You lost."
-    } else {
-      isDefeated = false
-      isDraw = false
-      $gMsg.textContent = "You win!"
+function showResults() {
+  if (isDraw === true) {
+    $gMsg.textContent = `Draw.`
+  } else if (isAlive === false) {
+    $gMsg.textContent = `You lost.`
+    if (dBJ === true){
+      $gMsg.textContent = `Dealer Blackjack. You lost.`
     }
-  } else {
-    isDefeated = false
-    $gMsg.textContent = "You win!"
+  } else if (hasWon === true) {
+    $gMsg.textContent = `You win!`
+    if (pBJ === true) {
+      $gMsg.textContent = `Blackjack! You win!`
+    }
   }
-
-  console.log(`isDraw: ${isDraw}`)
-  console.log(`isDefeated: ${isDefeated}`)
 }
 
 /** Start Game */
 $start.addEventListener("click", startGame = () => {
 
+  $gMsg.textContent = ``
   $restart.style.display = "inline"
   $add.style.display = "inline"
   $stand.style.display = "inline"
@@ -131,13 +153,8 @@ $start.addEventListener("click", startGame = () => {
   dTotal = sumOfCards(dCards)
 
   // Converts 1st card to 1 if both cards are valued at 11
-  pTotal = preventExceed(pTotal, pCard1, pCards)
-  dTotal = preventExceed(dTotal, dCard1, dCards)
-
-  checkSum(pTotal)
-
-  $dTotal.textContent = ""
-
+  pTotal = preventBust(pTotal, pCard1, pCards)
+  dTotal = preventBust(dTotal, dCard1, dCards) 
   
   // Displays all player cards on screen
   for (let card of pCards) {
@@ -146,25 +163,19 @@ $start.addEventListener("click", startGame = () => {
     $pCards.append($thisCard)
     
   }
-  
   // Displays first dealer card only on screen
-  for (let card of dCards) {
+  dCards.forEach((card, index) => {
     let $thisCard = document.createElement("span")
-    if (dCards.indexOf(card) === 0) {
-      $thisCard.textContent = card
-    } else {
-      $thisCard.textContent = "?"
-    }
+    $thisCard.textContent = (index === 0) ? card : "?";
     $dCards.append($thisCard)
-  }
-  
-  // Removes Start button on first game
+  })
+  // Removes Start button and displays total
   $start.style.display = "none"
+  $dTotal.textContent = "?"
+  $pTotal.textContent = pTotal 
   
-  bothBlackJack()
-  dealerBlackJack()
-  
-  console.log(`Dealer: ${dTotal}`)
+  // Check for Blackjack
+  onFirstPair()
 })
 
 /** Add Card on Hand */
@@ -179,13 +190,34 @@ $add.addEventListener("click", () => {
   $thisCard.textContent = newCard
   $pCards.append($thisCard)
 
-  checkSum(pTotal)
+  onPlayerHit()
+
+  $pTotal.textContent = pTotal 
+})
+
+/** Stand Cards in Hand */
+$stand.addEventListener("click", () => {
+  onDealerHit()
+  if (dTotal === 21) {
+    isAlive = false
+  } else if (dTotal > 21) {
+    hasWon = true
+  } else {
+    if (dTotal > pTotal) {
+      isAlive = false
+    } else if (dTotal < pTotal) {
+      hasWon = true
+    } else {
+      isDraw = true
+    }
+  }
+  showResults()
 })
 
 /** New Round */
 $restart.addEventListener("click", () => {
 
-  hasBlackjack = false
+  hasWon = false
 
   // Deletes cards inside array
   pCards.length = 0
@@ -204,30 +236,4 @@ $restart.addEventListener("click", () => {
 
   startGame()
 })
-
-/** Stand Cards in Hand */
-$stand.addEventListener("click", () => {
-  $dCards.querySelectorAll("span")[1].textContent = dCards[1]
-  $add.style.display = "none"
-  $stand.style.display = "none"
-  
-  while (dTotal < 17) {
-    let $thisCard = document.createElement("span")
-    let newCard = Math.floor(Math.random()*10) + 2
-
-    dCards.push(newCard)
-    dTotal = sumOfCards(dCards)
-
-    $thisCard.textContent = newCard
-    $dCards.append($thisCard)
-
-    console.log(dCards)
-    console.log(dTotal)
-  } 
-  
-  $dTotal.textContent = dTotal
-
-  checkWin()
-})
-
 
