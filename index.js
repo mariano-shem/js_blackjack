@@ -1,7 +1,12 @@
-const $start = document.querySelector(".start")
 const $restart = document.querySelector(".again")
 const $add = document.querySelector(".add")
 const $stand = document.querySelector(".stand")
+const $rBank = document.querySelector(".reset-bank")
+const $rBet = document.querySelector(".reset-bet")
+
+const $confbet = document.querySelector(".confbet")
+const $bets = document.querySelectorAll(".bets")
+const $bWrap = document.querySelector(".betwrap")
 
 const $pCards = document.querySelector(".player")
 const $dCards = document.querySelector(".dealer")
@@ -10,6 +15,8 @@ const $gMsg = document.querySelector(".game-msg")
 const $pTotal = document.querySelector(".t-player")
 const $dTotal = document.querySelector(".t-dealer")
 
+const $accChips = document.querySelector(".mychips")
+
 let pCards = []
 let dCards = []
 let pCard1, pCard2
@@ -17,6 +24,8 @@ let dCard1, dCard2
 let pTotal, dTotal
 
 let chips = 1000
+let totalbet = 0
+$accChips.textContent = `Chips: ${chips}`
 
 /** Flags */
 let hasWon = false
@@ -24,6 +33,11 @@ let isDraw = false
 let isAlive = true
 let dBJ = false
 let pBJ = false
+
+$restart.style.display = "none"
+$confbet.style.display = "none"
+$rBank.style.display = "none"
+$rBet.style.display = "none"
 
 function randomizeCards(card1, card2) {
   card1 = Math.floor(Math.random()*10) + 2
@@ -122,27 +136,41 @@ function onDealerHit() {
 /** Fn to check win status after standing */
 function showResults() {
   if (isDraw === true) {
-    $gMsg.textContent = `Draw.`
+    $gMsg.textContent = `Draw. You get ${totalbet} back.`
+    chips += totalbet
   } else if (isAlive === false) {
-    $gMsg.textContent = `You lost.`
+    $gMsg.textContent = `You lost ${totalbet}.`
     if (dBJ === true){
-      $gMsg.textContent = `Dealer Blackjack. You lost.`
+      $gMsg.textContent = `Dealer Blackjack. You lost ${totalbet}.`
     }
   } else if (hasWon === true) {
-    $gMsg.textContent = `You win!`
+    $gMsg.textContent = `You win  ${totalbet * 2}!`
+    chips += totalbet * 2
     if (pBJ === true) {
-      $gMsg.textContent = `Blackjack! You win!`
+      $gMsg.textContent = `Blackjack! You win  ${(totalbet * 2) + (totalbet/2)}!`
+      chips += (totalbet * 2) + (totalbet/2)
     }
   }
+  if (chips > 0) {
+    document.querySelector(".betinfo").textContent = `Place your bet.`
+    $restart.style.display = "inline"
+    $confbet.style.display = "none" 
+    $rBet.style.display = "none" 
+  } else {
+    document.querySelector(".betinfo").textContent = `You are out of chips.`
+    $rBank.style.display = "inline"
+  }
+  $accChips.textContent = `Chips: ${chips}`
+  totalbet = 0
 }
 
 /** Start Game */
-$start.addEventListener("click", startGame = () => {
+function startGame() {
 
   $gMsg.textContent = ``
-  $restart.style.display = "inline"
   $add.style.display = "inline"
   $stand.style.display = "inline"
+  $bWrap.style.display = "none"
 
   // Randomizes first two cards of both player and dealer
   pCards = randomizeCards(pCard1, pCard2, pCards)
@@ -170,13 +198,12 @@ $start.addEventListener("click", startGame = () => {
     $dCards.append($thisCard)
   })
   // Removes Start button and displays total
-  $start.style.display = "none"
   $dTotal.textContent = "?"
   $pTotal.textContent = pTotal 
   
   // Check for Blackjack
   onFirstPair()
-})
+}
 
 /** Add Card on Hand */
 $add.addEventListener("click", () => {
@@ -216,15 +243,42 @@ $stand.addEventListener("click", () => {
 
 /** New Round */
 $restart.addEventListener("click", () => {
-
   hasWon = false
+  $bWrap.style.display = "block"
+  $restart.style.display = "none"
+})
+
+$bets.forEach((bet) => {bet.addEventListener("click", function placeBets() {
+  let mybet = Number(this.textContent)
+  let tempbet = totalbet
+  tempbet += mybet
+  $rBet.style.display = "inline"
+  if (tempbet <= chips && tempbet !== 0) {
+    totalbet = tempbet
+    document.querySelector(".betinfo").textContent = `You bet ${totalbet}.`
+    $confbet.style.display = "inline"
+  } else if (tempbet > chips || tempbet > 1000) {
+    document.querySelector(".betinfo").textContent = `You have exceeded your bet. Current bet: ${totalbet}`
+  }
+})})
+
+$confbet.addEventListener("click", () => {
+  chips -= totalbet
+  $accChips.textContent = `Chips: ${chips}`
+  $bWrap.style.display = "none"
+
+  // Reset all flags
+  isAlive = true
+  isDraw = false
+  hasWon = false
+  dBJ = false
+  pBJ = false
 
   // Deletes cards inside array
   pCards.length = 0
   dCards.length = 0
 
   // Deletes cards on display
-  
   let allHand = document.querySelectorAll(".hand")
 
   for (let hand of allHand) {
@@ -237,3 +291,9 @@ $restart.addEventListener("click", () => {
   startGame()
 })
 
+$rBet.addEventListener("click", () => {
+  totalbet = 0
+  $confbet.style.display = "none"
+  $rBet.style.display = "none"
+  document.querySelector(".betinfo").textContent = `Bet resetted.`
+})
