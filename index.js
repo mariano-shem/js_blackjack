@@ -115,14 +115,15 @@ function onDealerHit() {
   $dCards.querySelectorAll("span")[1].textContent = dCards[1]
   $add.style.display = "none"
   $stand.style.display = "none"
-  
+
   while (dTotal < 17) {
-    let $thisCard = document.createElement("span")
+
     let newCard = Math.floor(Math.random()*10) + 2
     
     dCards.push(newCard)
     dTotal = sumOfCards(dCards)
-    
+
+    let $thisCard = document.createElement("span")
     $thisCard.textContent = newCard
     $dCards.append($thisCard)
 

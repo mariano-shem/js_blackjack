@@ -64,8 +64,13 @@ main {
   height: 2.5rem;
   margin: 0.75rem 0;
 }
-.again, .add, .stand {
+.again, .add, .stand, .confbet, .reset-bank, .reset-bet {
   display: none;
+  font-size: 1.5rem;
+  width: 7rem;
+  height: 3rem;
+  border-radius: 6px;
+  border: none;
 }
 .bets {
   text-align: center;
