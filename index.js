@@ -34,10 +34,9 @@ let isAlive = true
 let dBJ = false
 let pBJ = false
 
-$restart.style.display = "none"
-$confbet.style.display = "none"
-$rBank.style.display = "none"
-$rBet.style.display = "none"
+// $confbet.style.display = "none"
+// $rBank.style.display = "none"
+// $rBet.style.display = "none"
 
 function randomizeCards(card1, card2) {
   card1 = Math.floor(Math.random()*10) + 2
@@ -151,15 +150,17 @@ function showResults() {
       chips += (totalbet * 2) + (totalbet/2)
     }
   }
+
   if (chips > 0) {
     document.querySelector(".betinfo").textContent = `Place your bet.`
     $restart.style.display = "inline"
     $confbet.style.display = "none" 
     $rBet.style.display = "none" 
-  } else {
+  } else if (chips === 0){
     document.querySelector(".betinfo").textContent = `You are out of chips.`
     $rBank.style.display = "inline"
   }
+
   $accChips.textContent = `Chips: ${chips}`
   totalbet = 0
 }
@@ -296,4 +297,10 @@ $rBet.addEventListener("click", () => {
   $confbet.style.display = "none"
   $rBet.style.display = "none"
   document.querySelector(".betinfo").textContent = `Bet resetted.`
+})
+
+$rBank.addEventListener("click", () => {
+  chips = 1000
+  $bWrap.style.display = "block"
+  $rBank.style.display = "none"
 })
