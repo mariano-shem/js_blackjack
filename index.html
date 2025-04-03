@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Interactive BlackJack</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="index.css">
 </head>
 <body>
@@ -12,8 +15,8 @@
     <section class="hand dealer"></section>
     <p class="total t-dealer"></p>
     <p class="game-msg"></p>
-    <p class="total t-player"></p>
     <section class="hand player"></section>
+    <p class="total t-player"></p>
 
     <div>
       <button class="btn add" type="button">Hit</button>
@@ -22,11 +25,11 @@
     </div>
     <div class="betwrap">
       <p class="betinfo">Place your bets.</p>
-      <button type="button" class="bets">10</button>
-      <button type="button" class="bets">50</button>
-      <button type="button" class="bets">100</button>
-      <button type="button" class="bets">500</button>
-      <button type="button" class="bets">1000</button>
+      <button type="button" class="bets b-red">10</button>
+      <button type="button" class="bets b-green">50</button>
+      <button type="button" class="bets b-blue">100</button>
+      <button type="button" class="bets b-yell">500</button>
+      <button type="button" class="bets b-purp">1000</button>
       <p>
         <button type="button" class="confbet">Done</button>
         <button type="button" class="reset-bet">Reset Bet</button>
