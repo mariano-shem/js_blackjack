@@ -260,6 +260,7 @@ main {
     aspect-ratio: 7 / 3;
     width: 80%;
     border-radius: 4px;
+    margin: 1rem 0;
   }
   .bal {
     margin: 0 0.5rem;
