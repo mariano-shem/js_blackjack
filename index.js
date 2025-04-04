@@ -56,14 +56,23 @@ function preventBust(sum, card1, arr) {
     arr[0] = card1
     sum = sumOfCards(arr)
   }
-
   return sum
 }
-
+function checkBust(card, sum, arr) {
+  if (card === 11 && sum > 21) {
+    card = 1
+    arr.pop()
+    arr.push(card)
+    console.log("Prevented a possible bust.")
+    console.log(arr)
+    sum = sumOfCards(arr)
+  }
+  return sum
+}
 function showDealerPair() {
   $stand.style.display = "none"
   $add.style.display = "none"
-  $dCards.querySelectorAll("span")[1].textContent = dCards[1]
+  $dCards.querySelectorAll("span")[0].textContent = (dCards[0] === 11) ? "A" : dCards[0];
   $dTotal.textContent = dTotal
 }
 function onFirstPair() {
@@ -88,7 +97,6 @@ function onFirstPair() {
     showResults()
   }
 }
-
 function onPlayerHit() {
   if (pTotal === 21) {
     onDealerHit()
@@ -112,21 +120,20 @@ function onPlayerHit() {
     hasWon = false
   }
 }
-
 function onDealerHit() {
-  $dCards.querySelectorAll("span")[1].textContent = dCards[1]
+  $dCards.querySelectorAll("span")[0].textContent = (dCards[0] === 11) ? "A" : dCards[0];
   $add.style.display = "none"
   $stand.style.display = "none"
 
   while (dTotal < 17) {
 
     let newCard = Math.floor(Math.random()*10) + 2
-    
     dCards.push(newCard)
     dTotal = sumOfCards(dCards)
+    dTotal = checkBust(newCard, dTotal, dCards)
 
     let $thisCard = document.createElement("span")
-    $thisCard.textContent = newCard
+    $thisCard.textContent = (newCard === 11) ? "A" : newCard;
     $dCards.append($thisCard)
 
   } 
@@ -196,14 +203,19 @@ function startGame() {
   // Displays all player cards on screen
   for (let card of pCards) {
     let $thisCard = document.createElement("span")
-    $thisCard.textContent = card
+    $thisCard.textContent = (card === 11) ? "A" : card;
     $pCards.append($thisCard)
     
   }
   // Displays first dealer card only on screen
   dCards.forEach((card, index) => {
     let $thisCard = document.createElement("span")
-    $thisCard.textContent = (index === 0) ? card : "?";
+    if (index === 0) {
+      $thisCard.textContent = "?"
+    } else {
+      $thisCard.textContent = (card === 11) ? "A" : card;
+    }
+    
     $dCards.append($thisCard)
   })
   // Removes Start button and displays total
@@ -220,10 +232,11 @@ $add.addEventListener("click", () => {
   let newCard = Math.floor(Math.random()*10) + 2
   pCards.push(newCard)
   pTotal = sumOfCards(pCards)
+  pTotal = checkBust(newCard, pTotal, pCards)
 
   // Displays added card on screen
   let $thisCard = document.createElement("span")
-  $thisCard.textContent = newCard
+  $thisCard.textContent = (newCard === 11) ? "A" : newCard;
   $pCards.append($thisCard)
 
   onPlayerHit()
@@ -256,6 +269,32 @@ $restart.addEventListener("click", () => {
   $bWrap.style.display = "flex"
   $restart.style.display = "none"
   $ret.textContent = `$0`
+
+  // Reset all flags
+  isAlive = true
+  isDraw = false
+  hasWon = false
+  dBJ = false
+  pBJ = false
+
+  // Deletes cards inside array
+  pCards.length = 0
+  dCards.length = 0
+
+  // Deletes cards on display
+  let allHand = document.querySelectorAll(".hand")
+
+  for (let hand of allHand) {
+    let $allCards = hand.querySelectorAll("span")
+    for (let thisCard of $allCards) {
+      thisCard.remove()
+    }
+  }
+
+  //Deletes card total on display
+  $dTotal.textContent = ""
+  $pTotal.textContent = ""
+  $gMsg.textContent = ""
 })
 
 $bets.forEach((bet) => {bet.addEventListener("click", function placeBets() {
@@ -281,27 +320,6 @@ $confbet.addEventListener("click", () => {
     $confbet.style.display = "none"
     $rBet.style.display = "none"
   
-    // Reset all flags
-    isAlive = true
-    isDraw = false
-    hasWon = false
-    dBJ = false
-    pBJ = false
-  
-    // Deletes cards inside array
-    pCards.length = 0
-    dCards.length = 0
-  
-    // Deletes cards on display
-    let allHand = document.querySelectorAll(".hand")
-  
-    for (let hand of allHand) {
-      let $allCards = hand.querySelectorAll("span")
-      for (let thisCard of $allCards) {
-        thisCard.remove()
-      }
-    }
-  
     startGame()
   }
 })
@@ -318,5 +336,31 @@ $rBank.addEventListener("click", () => {
   $accChips.textContent = `$${chips}`
   $bWrap.style.display = "flex"
   $rBank.style.display = "none"
+  $gMsg.textContent = ""
+
+  // Reset all flags
+  isAlive = true
+  isDraw = false
+  hasWon = false
+  dBJ = false
+  pBJ = false
+
+  // Deletes cards inside array
+  pCards.length = 0
+  dCards.length = 0
+
+  // Deletes cards on display
+  let allHand = document.querySelectorAll(".hand")
+
+  for (let hand of allHand) {
+    let $allCards = hand.querySelectorAll("span")
+    for (let thisCard of $allCards) {
+      thisCard.remove()
+    }
+  }
+
+  //Deletes card total on display
+  $dTotal.textContent = ""
+  $pTotal.textContent = ""
   $gMsg.textContent = ""
 })
