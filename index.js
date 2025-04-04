@@ -138,21 +138,21 @@ function onDealerHit() {
 /** Fn to check win status after standing */
 function showResults() {
   if (isDraw === true) {
-    $gMsg.textContent = `Draw. You get ${totalbet} back.`
+    $gMsg.textContent = `Draw. You get $${totalbet} back.`
     $ret.textContent = `$${totalbet}`
     chips += totalbet
   } else if (isAlive === false) {
-    $gMsg.textContent = `You lost ${totalbet}.`
+    $gMsg.textContent = `You lost $${totalbet}.`
     $ret.textContent = `$0`
     if (dBJ === true){
-      $gMsg.textContent = `Dealer Blackjack. You lost ${totalbet}.`
+      $gMsg.textContent = `Dealer Blackjack. You lost $${totalbet}.`
     }
   } else if (hasWon === true) {
-    $gMsg.textContent = `You win  ${totalbet * 2}!`
+    $gMsg.textContent = `You win  $${totalbet * 2}!`
     $ret.textContent = `$${totalbet * 2}`
     chips += totalbet * 2
     if (pBJ === true) {
-      $gMsg.textContent = `Blackjack! You win  ${(totalbet * 2) + (totalbet/2)}!`
+      $gMsg.textContent = `Blackjack! You win  $${(totalbet * 2) + (totalbet/2)}!`
       chips += (totalbet * 2) + (totalbet/2)
     }
   }
