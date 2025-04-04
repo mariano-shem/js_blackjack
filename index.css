@@ -19,17 +19,21 @@ body {
   color: #f2f4f6;
   font-size: 16px;
   overflow: hidden;
-  height: 100vh;
+  height: max-content;
 }
 button {
   font-family: inherit;
 }
 main {
- display: flex;
- flex-direction: column;
- align-items: center;
- height: 75vh;
- border: 1px solid red;
+  display: flex;
+  /* border: 1px solid yellow; */
+
+}
+.tbl-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* border: 1px solid white; */
 }
 .hand {
   display: flex;
@@ -64,13 +68,10 @@ main {
   height: 2.5rem;
   margin: 0.75rem 0;
 }
-.again, .add, .stand, .confbet, .reset-bank, .reset-bet {
-  display: none;
-  font-size: 1.5rem;
-  width: 7rem;
-  height: 3rem;
-  border-radius: 6px;
-  border: none;
+.bet-wrap {
+  display: flex;
+  justify-content: flex-end;
+
 }
 .bets {
   text-align: center;
@@ -99,11 +100,79 @@ main {
   border-color: #8726A1;
   color: #8726A1;
 }
+.btn-wrap {
+  display: flex;
+  justify-content: center;
+  /* border: 1px solid green; */
+}
+.btn-wrap button {
+  display: none;
+  border: none;
+  box-shadow: 0 2px 3px;
+  margin: 0.5rem;
+}
+.add {
+  background-color: #EBF44E;
+  color: #616615;
+}
+.stand {
+  background-color: #5D80D9;
+  color: #47189E;
+}
+.confbet {
+  background-color: #36C257;
+  color: #1E5B36;
+}
+.reset-bet {
+  background-color: var(--red);
+  color: #9E1818;
+}
+
+.bal-wrap {
+  max-height: max-content;
+  display: flex;
+  /* border: 1px solid blue; */
+}
+.bal {
+  display: flex;
+  flex-direction: column;
+  margin: 1rem;
+}
+.bal span:first-child {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+.bal span:last-child {
+  display: flex;
+  align-items: center;
+  color: var(--yellow);
+  padding-left: 0.5rem;
+  border-radius: 8px;
+  width: 10rem;
+  background-color: #2D2D2D;
+}
 
 
 @media (orientation: landscape) {
   body {
     background-image: url(assets/board_landscape.svg);
+  }
+  main {
+    height: 100vh;
+    width: 90%;
+    flex-wrap: wrap;
+    margin: 0 auto;
+  }
+  .tbl-wrap {
+    height: 50%;
+    width: 100%;
+  }
+  .btn-wrap, .bal-wrap {
+    width: 50%;
+  }
+  .bet-cont {
+    height: 6rem;
+    width: 100%;
   }
   .hand span {
     font-size: 2rem;
@@ -116,20 +185,74 @@ main {
     width: 5rem;
     border-width: 0.75rem;
   }
+  .btn-wrap button {
+    font-size: 1.5rem;
+    width: 7rem;
+    height: 3rem;
+    border-radius: 6px;
+  }
+  .bal span:last-child {
+    height: 5rem;
+    font-size: 3rem;
+  }
 }
 @media (orientation: portrait) {
   body {
     background-image: url(assets/board_portrait.svg);
   }
+  main {
+    height: 100vh;
+    flex-wrap: wrap;
+  }
   .hand span {
     font-size: 1.5rem;
-    height: 4rem;
-    width: 3rem;
+    height: 6rem;
+    width: 4rem;
+  }
+  .tbl-wrap {
+    height: 60%;
+  }
+  .tbl-wrap, .bet-cont {
+    width: 100%;
+  }
+  .bal-wrap, .btn-wrap {
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    width: 50%;
+  }
+  .btn-wrap {
+    padding-top: 1.5rem;
+  }
+  .bet-cont {
+    height: 3.5rem;
+  }
+  .bet-wrap {
+    background-color: #2d2d2d;
+    padding: 0.5rem 0;
+    justify-content: center;
   }
   .bets {
     font-size: 1rem;
     height: 3rem;
     width: 3rem;
     border-width: 0.4rem;
+  }
+  .btn-wrap button {
+    font-size: 2rem;
+    aspect-ratio: 7 / 3;
+    width: 80%;
+    border-radius: 4px;
+  }
+  .bal {
+    margin: 0 0.5rem;
+
+  }
+  .bal span:first-child {
+    font-size: 1rem;
+  }
+  .bal span:last-child {
+    height: 3rem;
+    font-size: 2rem;
   }
 }
