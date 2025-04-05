@@ -74,6 +74,7 @@ function checkBust(card, sum, arr) {
 function showDealerPair() {
   $stand.style.display = "none"
   $hit.style.display = "none"
+  $double.style.display = "none"
   $dCards.querySelectorAll("span")[0].textContent = (dCards[0] === 11) ? "A" : dCards[0];
   $dTotal.textContent = dTotal
 }
@@ -128,21 +129,23 @@ function onDealerHit() {
   $stand.style.display = "none"
   $double.style.display = "none"
 
-  while (dTotal < 17) {
-
+  for(let i = 0; dTotal < 17; i++) {
     let newCard = Math.floor(Math.random()*10) + 2
     dCards.push(newCard)
     dTotal = sumOfCards(dCards)
     dTotal = checkBust(newCard, dTotal, dCards)
 
-    let $thisCard = document.createElement("span")
-    $thisCard.textContent = (newCard === 11) ? "A" : newCard;
-    $dCards.append($thisCard)
+    setTimeout(() => {
+      let $thisCard = document.createElement("span")
+      $thisCard.textContent = (newCard === 11) ? "A" : newCard;
+      $dCards.append($thisCard)
+      console.log(dTotal)
+    }, 250 * i)
+    
+  }
 
-  } 
-  
   $dTotal.textContent = dTotal
-
+  
 }
 
 function onStand() {
