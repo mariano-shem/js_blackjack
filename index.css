@@ -15,6 +15,7 @@ body {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+  background-color: var(--green);
   font-family: var(--bebas);
   color: #f2f4f6;
   font-size: 16px;
@@ -125,7 +126,11 @@ main {
   transform: translateY(4px);
   box-shadow: none;
 }
-.add {
+.double {
+  background-color: #F49B4E;
+  color: #664a15;
+}
+.hit {
   background-color: #EBF44E;
   color: #616615;
 }
@@ -133,11 +138,15 @@ main {
   background-color: #5D80D9;
   color: #47189E;
 }
+.restart {
+  background-color: #36C257;
+  color: #1E5B36;
+}
 .confbet {
   background-color: #36C257;
   color: #1E5B36;
 }
-.reset-bet {
+.reset-bet, .reset-bank {
   background-color: var(--red);
   color: #9E1818;
 }

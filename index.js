@@ -1,5 +1,6 @@
-const $restart = document.querySelector(".again")
-const $add = document.querySelector(".add")
+const $restart = document.querySelector(".restart")
+const $double = document.querySelector(".double")
+const $hit = document.querySelector(".hit")
 const $stand = document.querySelector(".stand")
 const $rBank = document.querySelector(".reset-bank")
 const $rBet = document.querySelector(".reset-bet")
@@ -33,6 +34,7 @@ $accChips.textContent = `$${chips}`
 let hasWon = false
 let isDraw = false
 let isAlive = true
+let doesDouble = false
 let dBJ = false
 let pBJ = false
 
@@ -71,7 +73,7 @@ function checkBust(card, sum, arr) {
 }
 function showDealerPair() {
   $stand.style.display = "none"
-  $add.style.display = "none"
+  $hit.style.display = "none"
   $dCards.querySelectorAll("span")[0].textContent = (dCards[0] === 11) ? "A" : dCards[0];
   $dTotal.textContent = dTotal
 }
@@ -122,8 +124,9 @@ function onPlayerHit() {
 }
 function onDealerHit() {
   $dCards.querySelectorAll("span")[0].textContent = (dCards[0] === 11) ? "A" : dCards[0];
-  $add.style.display = "none"
+  $hit.style.display = "none"
   $stand.style.display = "none"
+  $double.style.display = "none"
 
   while (dTotal < 17) {
 
@@ -142,51 +145,79 @@ function onDealerHit() {
 
 }
 
+function onStand() {
+  onDealerHit()
+  if (dTotal === 21) {
+    isAlive = false
+  } else if (dTotal > 21) {
+    hasWon = true
+  } else {
+    if (dTotal > pTotal) {
+      isAlive = false
+    } else if (dTotal < pTotal) {
+      hasWon = true
+    } else {
+      isDraw = true
+    }
+  }
+  showResults()
+}
+
 /** Fn to check win status after standing */
 function showResults() {
   if (isDraw === true) {
+    if (doesDouble) {
+      chips += totalbet/2
+    } else {
+      chips += totalbet
+    }
     $gMsg.textContent = `Draw. You get $${totalbet} back.`
     $ret.textContent = `$${totalbet}`
-    chips += totalbet
+
   } else if (isAlive === false) {
     $gMsg.textContent = `You lost $${totalbet}.`
     $ret.textContent = `$0`
+
     if (dBJ === true){
       $gMsg.textContent = `Dealer Blackjack. You lost $${totalbet}.`
     }
   } else if (hasWon === true) {
-    $gMsg.textContent = `You win  $${totalbet * 2}!`
-    $ret.textContent = `$${totalbet * 2}`
-    chips += totalbet * 2
     if (pBJ === true) {
       $gMsg.textContent = `Blackjack! You win  $${(totalbet * 2) + (totalbet/2)}!`
+      $ret.textContent = `$${(totalbet * 2) + (totalbet/2)}`
       chips += (totalbet * 2) + (totalbet/2)
+    } else {
+      $gMsg.textContent = `You win  $${totalbet * 2}!`
+      $ret.textContent = `$${totalbet * 2}`
+      chips += totalbet * 2
     }
   }
 
   if (chips > 0) {
-    $accBets.textContent = `$0`
     $restart.style.display = "inline"
     $confbet.style.display = "none" 
     $rBet.style.display = "none" 
   } else if (chips === 0){
-    $accBets.textContent = `$0`
     $rBank.style.display = "inline"
   }
 
   $accChips.textContent = `$${chips}`
-  totalbet = 0
 }
 
 /** Start Game */
 function startGame() {
 
   $gMsg.textContent = ``
-  $add.style.display = "inline"
+  $hit.style.display = "inline"
   $stand.style.display = "inline"
   $bWrap.style.display = "none"
   $confbet.style.display = "none"
   $rBet.style.display = "none"
+  
+  if (totalbet <= chips) {
+    $double.style.display = "inline"
+  }
+
 
   // Randomizes first two cards of both player and dealer
   pCards = randomizeCards(pCard1, pCard2, pCards)
@@ -226,9 +257,10 @@ function startGame() {
   onFirstPair()
 }
 
-/** Add Card on Hand */
-$add.addEventListener("click", () => {
+/** Hit Card on Hand */
+$hit.addEventListener("click", () => {
 
+  $double.style.display = "none"
   let newCard = Math.floor(Math.random()*10) + 2
   pCards.push(newCard)
   pTotal = sumOfCards(pCards)
@@ -244,23 +276,38 @@ $add.addEventListener("click", () => {
   $pTotal.textContent = pTotal 
 })
 
-/** Stand Cards in Hand */
-$stand.addEventListener("click", () => {
-  onDealerHit()
-  if (dTotal === 21) {
-    isAlive = false
-  } else if (dTotal > 21) {
-    hasWon = true
-  } else {
-    if (dTotal > pTotal) {
-      isAlive = false
-    } else if (dTotal < pTotal) {
-      hasWon = true
-    } else {
-      isDraw = true
-    }
-  }
-  showResults()
+/** Stand Cards on Hand */
+$stand.addEventListener("click",() => {
+  onStand()
+})
+
+/** Double Cards on First Pair */
+$double.addEventListener("click", () => {
+
+  $double.style.display = "none"
+  doesDouble = true
+  totalbet *= 2
+  chips -= totalbet/2
+  $accBets.textContent = `$${totalbet}`
+  let newDoubleCard = Math.floor(Math.random()*10) + 2
+  pCards.push(newDoubleCard)
+  pTotal = sumOfCards(pCards)
+  pTotal = checkBust(newDoubleCard, pTotal, pCards)
+
+  // Displays added card on screen
+  let $thisCard = document.createElement("span")
+  $thisCard.textContent = (newDoubleCard === 11) ? "A" : newDoubleCard;
+  $pCards.append($thisCard)
+  
+  onPlayerHit()
+
+  $pTotal.textContent = pTotal
+
+
+  onStand()
+  
+  console.log(`bet: $${totalbet}`)
+  console.log(`chips: $${chips}`)
 })
 
 /** New Round */
@@ -269,6 +316,9 @@ $restart.addEventListener("click", () => {
   $bWrap.style.display = "flex"
   $restart.style.display = "none"
   $ret.textContent = `$0`
+  $accBets.textContent = `$0`
+  totalbet = 0
+  doesDouble = false
 
   // Reset all flags
   isAlive = true
@@ -307,7 +357,7 @@ $bets.forEach((bet) => {bet.addEventListener("click", function placeBets() {
     $accBets.textContent = `$${totalbet}`
     $confbet.style.display = "inline"
   } else if (tempbet > chips && tempbet > 1000) {
-    $accBets.textContent = `Exceeded.`
+    $gMsg.textContent = `Exceeded.`
   }
 })})
 
@@ -319,7 +369,8 @@ $confbet.addEventListener("click", () => {
     $bWrap.style.display = "none"
     $confbet.style.display = "none"
     $rBet.style.display = "none"
-  
+    
+    console.log(`chips b4: $${chips}`)
     startGame()
   }
 })
@@ -329,6 +380,7 @@ $rBet.addEventListener("click", () => {
   $confbet.style.display = "none"
   $rBet.style.display = "none"
   $accBets.textContent = `$0`
+  $gMsg.textContent = ""
 })
 
 $rBank.addEventListener("click", () => {
@@ -337,6 +389,9 @@ $rBank.addEventListener("click", () => {
   $bWrap.style.display = "flex"
   $rBank.style.display = "none"
   $gMsg.textContent = ""
+  $accBets.textContent = `$0`
+  totalbet = 0
+  doesDouble = false
 
   // Reset all flags
   isAlive = true
