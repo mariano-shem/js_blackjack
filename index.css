@@ -10,6 +10,7 @@
   --red: #D95D5D;
   --faint-green: #175420BF;
   --bebas: "Bebas Neue", sans-serif;
+  --fancy-font: "Grenze Gotisch", serif;
 }
 body {
   background-size: cover;
@@ -71,6 +72,7 @@ main {
   text-align: center;
 }
 .game-msg {
+  font-family: var(--fancy-font);
   font-size: 2rem;
   color: var(--yellow);
   height: 2.5rem;
