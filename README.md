@@ -1,5 +1,5 @@
 # BlackJack on Javascript  
-A basic web application of Blackjack written only with Javascript, HTML, and CSS. This project is inspired from 
+The card game Blackjack written only with Javascript, HTML, and CSS. This project is inspired from 
 <a href="https://scrimba.com/learn-javascript-c0v">Per Borgen's Javascript course in Scrimba.<a>
 
 ## First project and it's a gambling game.
