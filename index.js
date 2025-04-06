@@ -55,24 +55,27 @@ function randomizeCards(card1, card2) {
   return cardArr = [card1, card2]
 }
 function randomizeSuits(card) {
-  let thisSuit = Math.floor(Math.random() * suits.length)
-
-  let $thisImg = document.createElement("img")
-  $thisImg.src = suits[thisSuit]
-  $thisImg.className = "suit"
-
-  if (thisSuit < 2) {
-    card.style.color = "#bc1a1a"
-  }
-  card.append($thisImg)
+  return new Promise(resolve => {
+    let thisSuit = Math.floor(Math.random() * suits.length)
+  
+    let $thisImg = document.createElement("img")
+    $thisImg.src = suits[thisSuit]
+    $thisImg.className = "suit"
+  
+    if (thisSuit < 2) {
+      card.style.color = "#bc1a1a"
+    }
+    card.append($thisImg)
+    resolve()
+  })
 }
 function sumOfCards(cardArr) {
   return sum = cardArr.reduce((acc, card) => acc + card)
 }
-function createCard(allC, nC) {
+async function createCard(allC, nC) {
   let $thisCard = document.createElement("span")
   $thisCard.textContent = (nC === 11) ? "A" : nC;
-  randomizeSuits($thisCard)
+  await randomizeSuits($thisCard)
   allC.append($thisCard)
 }
 function preventBust(sum, card1, arr) {
