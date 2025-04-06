@@ -20,6 +20,13 @@ const $accChips = document.querySelector(".mychips")
 const $accBets = document.querySelector(".betinfo")
 const $ret = document.querySelector(".myreturn")
 
+let suits = [
+  "assets/suits/diamond-suit.svg",
+  "assets/suits/heart-suit.svg",
+  "assets/suits/club-suit.svg",
+  "assets/suits/spade-suit.svg",
+]
+
 let pCards = []
 let dCards = []
 let pCard1, pCard2
@@ -47,11 +54,27 @@ function randomizeCards(card1, card2) {
   card2 = Math.floor(Math.random()*10) + 2
   return cardArr = [card1, card2]
 }
+function randomizeSuits(card) {
+  let thisSuit = Math.floor(Math.random() * suits.length)
 
+  let $thisImg = document.createElement("img")
+  $thisImg.src = suits[thisSuit]
+  $thisImg.className = "suit"
+
+  if (thisSuit < 2) {
+    card.style.color = "#bc1a1a"
+  }
+  card.append($thisImg)
+}
 function sumOfCards(cardArr) {
   return sum = cardArr.reduce((acc, card) => acc + card)
 }
-
+function createCard(allC, nC) {
+  let $thisCard = document.createElement("span")
+  $thisCard.textContent = (nC === 11) ? "A" : nC;
+  randomizeSuits($thisCard)
+  allC.append($thisCard)
+}
 function preventBust(sum, card1, arr) {
   if (sum === 22) {
     card1 = 1
@@ -76,6 +99,7 @@ function showDealerPair() {
   $hit.style.display = "none"
   $double.style.display = "none"
   $dCards.querySelectorAll("span")[0].textContent = (dCards[0] === 11) ? "A" : dCards[0];
+  randomizeSuits($dCards.querySelectorAll("span")[0])
   $dTotal.textContent = dTotal
 }
 function onFirstPair() {
@@ -125,6 +149,7 @@ function onPlayerHit() {
 }
 function onDealerHit() {
   $dCards.querySelectorAll("span")[0].textContent = (dCards[0] === 11) ? "A" : dCards[0];
+  randomizeSuits($dCards.querySelectorAll("span")[0])
   $hit.style.display = "none"
   $stand.style.display = "none"
   $double.style.display = "none"
@@ -136,10 +161,7 @@ function onDealerHit() {
     dTotal = checkBust(newCard, dTotal, dCards)
 
     setTimeout(() => {
-      let $thisCard = document.createElement("span")
-      $thisCard.textContent = (newCard === 11) ? "A" : newCard;
-      $dCards.append($thisCard)
-      console.log(dTotal)
+      createCard($dCards, newCard)
     }, 250 * i)
     
   }
@@ -235,22 +257,23 @@ function startGame() {
   dTotal = preventBust(dTotal, dCard1, dCards) 
   
   // Displays all player cards on screen
-  for (let card of pCards) {
-    let $thisCard = document.createElement("span")
-    $thisCard.textContent = (card === 11) ? "A" : card;
-    $pCards.append($thisCard)
-    
-  }
+  pCards.forEach((card, index) => {
+    setTimeout(() => {
+      createCard($pCards, card)
+    }, 250 * index)
+  })
   // Displays first dealer card only on screen
   dCards.forEach((card, index) => {
-    let $thisCard = document.createElement("span")
-    if (index === 0) {
-      $thisCard.textContent = "?"
-    } else {
-      $thisCard.textContent = (card === 11) ? "A" : card;
-    }
-    
-    $dCards.append($thisCard)
+    setTimeout(() => {
+      let $thisCard = document.createElement("span")
+      if (index === 0) {
+        $thisCard.textContent = ""
+      } else {
+        $thisCard.textContent = (card === 11) ? "A" : card;
+        randomizeSuits($thisCard)
+      }
+      $dCards.append($thisCard)
+    }, 250 * index)
   })
   // Removes Start button and displays total
   $dTotal.textContent = "?"
@@ -270,11 +293,8 @@ $hit.addEventListener("click", () => {
   pTotal = checkBust(newCard, pTotal, pCards)
 
   // Displays added card on screen
-  let $thisCard = document.createElement("span")
-  $thisCard.textContent = (newCard === 11) ? "A" : newCard;
-  $pCards.append($thisCard)
-
   onPlayerHit()
+  createCard($pCards, newCard)
 
   $pTotal.textContent = pTotal 
 })
@@ -298,9 +318,7 @@ $double.addEventListener("click", () => {
   pTotal = checkBust(newDoubleCard, pTotal, pCards)
 
   // Displays added card on screen
-  let $thisCard = document.createElement("span")
-  $thisCard.textContent = (newDoubleCard === 11) ? "A" : newDoubleCard;
-  $pCards.append($thisCard)
+  createCard($pCards, newDoubleCard)
   
   onPlayerHit()
 
