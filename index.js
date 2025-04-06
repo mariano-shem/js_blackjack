@@ -87,11 +87,13 @@ function preventBust(sum, card1, arr) {
   return sum
 }
 function checkBust(card, sum, arr) {
-  if (card === 11 && sum > 21) {
-    card = 1
-    arr.pop()
-    arr.push(card)
-    sum = sumOfCards(arr)
+  if (sum > 21) {
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i] === 11) {
+        arr[i] = 1
+        sum = sumOfCards(arr)
+      }
+    }
   }
   return sum
 }
@@ -197,7 +199,7 @@ function showResults() {
     } else {
       chips += totalbet
     }
-    $gMsg.textContent = `Draw. You get $${totalbet} back.`
+    $gMsg.textContent = `Push. You get $${totalbet} back.`
     $ret.textContent = `$${totalbet}`
 
   } else if (isAlive === false) {
