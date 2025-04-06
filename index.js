@@ -88,8 +88,6 @@ function checkBust(card, sum, arr) {
     card = 1
     arr.pop()
     arr.push(card)
-    console.log("Prevented a possible bust.")
-    console.log(arr)
     sum = sumOfCards(arr)
   }
   return sum
@@ -98,8 +96,8 @@ function showDealerPair() {
   $stand.style.display = "none"
   $hit.style.display = "none"
   $double.style.display = "none"
-  $dCards.querySelectorAll("span")[0].textContent = (dCards[0] === 11) ? "A" : dCards[0];
-  randomizeSuits($dCards.querySelectorAll("span")[0])
+  $dCards.querySelector("span").textContent = (dCards[0] === 11) ? "A" : dCards[0];
+  randomizeSuits($dCards.querySelector("span"))
   $dTotal.textContent = dTotal
 }
 function onFirstPair() {
@@ -148,12 +146,11 @@ function onPlayerHit() {
   }
 }
 function onDealerHit() {
-  $dCards.querySelectorAll("span")[0].textContent = (dCards[0] === 11) ? "A" : dCards[0];
-  randomizeSuits($dCards.querySelectorAll("span")[0])
+  $dCards.querySelector("span").textContent = (dCards[0] === 11) ? "A" : dCards[0];
+  randomizeSuits($dCards.querySelector("span"))
   $hit.style.display = "none"
   $stand.style.display = "none"
   $double.style.display = "none"
-
   for(let i = 0; dTotal < 17; i++) {
     let newCard = Math.floor(Math.random()*10) + 2
     dCards.push(newCard)
@@ -164,6 +161,7 @@ function onDealerHit() {
       createCard($dCards, newCard)
     }, 250 * i)
     
+
   }
 
   $dTotal.textContent = dTotal
@@ -230,7 +228,7 @@ function showResults() {
 }
 
 /** Start Game */
-function startGame() {
+async function startGame() {
 
   $gMsg.textContent = ``
   $hit.style.display = "inline"
@@ -263,23 +261,31 @@ function startGame() {
     }, 250 * index)
   })
   // Displays first dealer card only on screen
-  dCards.forEach((card, index) => {
-    setTimeout(() => {
-      let $thisCard = document.createElement("span")
-      if (index === 0) {
-        $thisCard.textContent = ""
-      } else {
-        $thisCard.textContent = (card === 11) ? "A" : card;
-        randomizeSuits($thisCard)
-      }
-      $dCards.append($thisCard)
-    }, 250 * index)
-  })
+  function dispDealFP() {
+    return new Promise(resolve => {
+      dCards.forEach((card, index) => {
+        setTimeout(() => {
+          let $thisCard = document.createElement("span")
+          if (index === 0) {
+            $thisCard.textContent = ""
+          } else {
+            $thisCard.textContent = (card === 11) ? "A" : card;
+            randomizeSuits($thisCard)
+          }
+          $dCards.append($thisCard)
+          if (index === dCards.length - 1) {
+            resolve()
+          }
+        }, 250 * index)
+      })
+    })
+  }
   // Removes Start button and displays total
   $dTotal.textContent = "?"
   $pTotal.textContent = pTotal 
   
   // Check for Blackjack
+  await dispDealFP()
   onFirstPair()
 }
 
@@ -319,16 +325,10 @@ $double.addEventListener("click", () => {
 
   // Displays added card on screen
   createCard($pCards, newDoubleCard)
-  
   onPlayerHit()
-
   $pTotal.textContent = pTotal
-
-
   onStand()
   
-  console.log(`bet: $${totalbet}`)
-  console.log(`chips: $${chips}`)
 })
 
 /** New Round */
@@ -377,7 +377,7 @@ $bets.forEach((bet) => {bet.addEventListener("click", function placeBets() {
     totalbet = tempbet
     $accBets.textContent = `$${totalbet}`
     $confbet.style.display = "inline"
-  } else if (tempbet > chips && tempbet > 1000) {
+  } else if (tempbet > chips || tempbet > 1000) {
     $gMsg.textContent = `Exceeded.`
   }
 })})
@@ -391,7 +391,6 @@ $confbet.addEventListener("click", () => {
     $confbet.style.display = "none"
     $rBet.style.display = "none"
     
-    console.log(`chips b4: $${chips}`)
     startGame()
   }
 })
